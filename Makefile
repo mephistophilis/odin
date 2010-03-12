@@ -1,2 +1,6 @@
 all:
-	gcc -Wall -O2 odin.c -o odin
+	gcc -g -Wall odin.c -o odin
+
+brick:
+	gcc -g -Wall -DVOID_MY_WARRANTY odin.c -o odin
+
