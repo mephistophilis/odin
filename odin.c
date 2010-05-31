@@ -19,6 +19,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <unistd.h>
+#include <termios.h>
 
 #include "odin.h"
 
@@ -44,6 +45,23 @@ int odin_connect()
         return 0;
     }
 
+    /* Set terminal to raw mode */
+    struct termios term;
+    int fd = fileno(serial);
+
+    if(tcgetattr(fd, &term)) {
+        fprintf(stderr, "%s: Failed to get terminal attributes\n", __FUNCTION__);
+        return 0;
+    }
+
+    cfmakeraw(&term);
+
+    if(tcsetattr(fd, TCSANOW, &term)) {
+        fprintf(stderr, "%s: Failed to set terminal attributes\n", __FUNCTION__);
+        return 0;
+    }
+
+    /* Send handshake */
     unsigned char buf[1024] = "SAMSUNG";
 
     if(!fwrite(buf, strlen((char*)buf), 1, serial)) {
